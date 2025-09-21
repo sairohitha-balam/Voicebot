@@ -1,0 +1,65 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #1c1e21;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.status {
+    font-size: 1.2rem;
+    color: #606770;
+    height: 30px;
+    margin-bottom: 20px;
+}
+
+#micButton {
+    background: #007bff;
+    border: none;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#micButton:hover {
+    background-color: #0056b3;
+}
+
+#micButton.listening {
+    background-color: #dc3545;
+    transform: scale(1.1);
+}
+
+.mic-icon {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+.user-question {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #333;
+    min-height: 20px;
+}
