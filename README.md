@@ -1,4 +1,4 @@
-# Gemini Voice Bot 🤖
+# Voice Bot 🤖
 
 A simple, user-friendly web application featuring a voice-activated chatbot powered by the Google Gemini API. The bot is designed to answer questions with the specific persona of Gemini, providing a seamless voice-in, voice-out user experience.
 
@@ -6,42 +6,37 @@ A simple, user-friendly web application featuring a voice-activated chatbot powe
 
 ---
 
-###  Live Demo
+### Live Demo
 
-**Test the live application here:** [https://voicebot-sairohitha-s-balams-projects.vercel.app/](https://YOUR-PROJECT-NAME.vercel.app)
+**Test the live application here:** [voicebot-ashy.vercel.app](voicebot-ashy.vercel.app)
 
-![Gemini Voice Bot Screenshot](https://i.imgur.com/8aB3C7H.png)
+![Voice Bot UI](voicebot.png)
 
-##  Features
+## Features
 
 -   **Voice-to-Text:** Utilizes the browser's built-in Web Speech API to transcribe user speech in real-time.
 -   **AI-Powered Responses:** Integrates with the Google Gemini API to generate intelligent and context-aware answers.
--   **Persona-Driven Dialogue:** The AI is specifically prompted to respond as Gemini, a helpful assistant from Google.
+-   **Streaming Responses:** Text from the AI is streamed token-by-token, creating a "live typing" effect.
+-   **Themed UI:** A dark, monospaced interface with neon-glow effects and animations.
+-   **Secure API Key Handling:** Employs a serverless function on Vercel to protect the Gemini API key.
 -   **Text-to-Speech:** The bot speaks its generated responses back to the user for a hands-free experience.
--   **Secure API Key Handling:** Employs a serverless function on Vercel to protect the Gemini API key, ensuring it is never exposed on the frontend.
--   **Minimalist UI:** Clean and simple interface focused on ease of use.
 
-##  Technology Stack
+## Technology Stack
 
 -   **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 -   **AI Model:** Google Gemini API (`gemini-1.5-flash`)
 -   **Backend:** Node.js Serverless Function
 -   **Deployment:** Vercel
 
-##  How It Works
+## How It Works
 
-The application follows a simple but powerful client-server architecture:
+1.  **Voice Input:** The user clicks the microphone button, and the browser's `SpeechRecognition` API captures their question.
+2.  **API Request:** The frontend sends this text to a serverless backend function at `/api/generate`.
+3.  **Secure Backend Processing:** The Vercel function securely accesses the `GEMINI_API_KEY` from its environment variables and sends a request to the Google Gemini API.
+4.  **AI Generation & Streaming:** Gemini streams the response back to the serverless function, which immediately relays it to the frontend.
+5.  **Live Display & Voice Output:** The frontend displays the text as it arrives and, once complete, uses the browser's `SpeechSynthesis` API to speak the answer out loud.
 
-1.  **Voice Input:** The user clicks the microphone button, and the browser's `SpeechRecognition` API captures their question and converts it to a text string.
-2.  **API Request:** The frontend sends this text string in a `POST` request to a serverless backend function hosted at `/api/generate`.
-3.  **Secure Backend Processing:** The Vercel function (running Node.js) receives the request. It securely accesses the `GEMINI_API_KEY` from its environment variables.
-4.  **AI Generation:** The function constructs a detailed prompt (including the persona instructions and the user's question) and sends it to the Google Gemini API.
-5.  **Response Handling:** Once Gemini generates a response, the serverless function sends it back to the frontend as a JSON object.
-6.  **Voice Output:** The frontend receives the response text and uses the browser's `SpeechSynthesis` API to speak the answer out loud to the user.
-
-##  Local Development Setup
-
-To run this project on your local machine:
+## Local Development Setup
 
 1.  **Prerequisites:**
     -   [Node.js](https://nodejs.org/) (LTS version recommended)
@@ -49,7 +44,7 @@ To run this project on your local machine:
 
 2.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
+    git clone [https://github.com/sairohitha-balam/Voicebot.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
     cd YOUR_REPOSITORY_NAME
     ```
 
@@ -60,15 +55,19 @@ To run this project on your local machine:
 
 4.  **Set Up Environment Variables:**
     -   Create a file named `.env.local` in the root of the project.
-    -   Add your Gemini API key to this file:
-        ```
-        GEMINI_API_KEY="YOUR_API_KEY_HERE"
-        ```
+    -   Add your Gemini API key: `GEMINI_API_KEY="YOUR_API_KEY_HERE"`
 
 5.  **Run the Development Server:**
-    -   This project uses Vercel's architecture. The best way to run it locally is with the Vercel CLI.
     ```bash
     npm install -g vercel # Install Vercel CLI globally
     vercel dev # Start the local development server
     ```
-    This will start a local server that correctly handles the serverless function in the `/api` directory.
+
+## Future Scope
+
+This project provides a solid foundation for a more advanced conversational AI assistant. Potential future enhancements include:
+
+* **Conversational Memory:** Upgrade the backend to remember the last few turns of the conversation for more natural follow-up questions.
+* **Function Calling & Tool Use:** Integrate external APIs to give the bot real-world capabilities, like fetching the live weather from a weather API.
+* **Personalization:** Allow users to choose different voices, speaking rates, or even bot personalities by dynamically altering the system prompt.
+* **"Wake Word" Activation:** Implement a "Hey Gemini" wake word to activate the bot without needing to click a button.
