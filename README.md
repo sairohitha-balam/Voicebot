@@ -8,7 +8,7 @@ A simple, user-friendly web application featuring a voice-activated chatbot powe
 
 ### Live Demo
 
-**Test the live application here:** [voicebot-ashy.vercel.app](voicebot-ashy.vercel.app)
+**Test the live application here:** [voicebot-ashy.vercel.app](https://voicebot-ashy.vercel.app/)
 
 ![Voice Bot UI](voicebot.png)
 
@@ -44,8 +44,8 @@ A simple, user-friendly web application featuring a voice-activated chatbot powe
 
 2.  **Clone the Repository:**
     ```bash
-    git clone [https://github.com/sairohitha-balam/Voicebot.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
-    cd YOUR_REPOSITORY_NAME
+    git clone https://github.com/sairohitha-balam/Voicebot.git
+    cd Voicebot
     ```
 
 3.  **Install Dependencies:**
@@ -71,3 +71,5 @@ This project provides a solid foundation for a more advanced conversational AI a
 * **Function Calling & Tool Use:** Integrate external APIs to give the bot real-world capabilities, like fetching the live weather from a weather API.
 * **Personalization:** Allow users to choose different voices, speaking rates, or even bot personalities by dynamically altering the system prompt.
 * **"Wake Word" Activation:** Implement a "Hey Gemini" wake word to activate the bot without needing to click a button.
+* **Multilingual Support:** Leverage the Gemini API's multilingual capabilities to allow users to converse in different languages.
+* **User Authentication:** Add a login system to save conversation histories and user preferences across sessions.
