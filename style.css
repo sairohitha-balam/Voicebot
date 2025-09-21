@@ -1,7 +1,23 @@
+/* --- Hacker Theme Overhaul --- */
+
+/* Import a monospaced font */
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;700&display=swap');
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f0f2f5;
-    color: #1c1e21;
+    /* Dark background and monospaced font */
+    font-family: 'Source Code Pro', monospace;
+    background-color: #0d1117; /* GitHub dark mode background */
+    color: #00f0ff; /* Neon cyan accent color */
+
+    /* Subtle scan lines effect for a CRT monitor feel */
+    background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0, 240, 255, 0.05),
+        rgba(0, 240, 255, 0.05) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,57 +25,133 @@ body {
     margin: 0;
 }
 
-.container {
+.main-container {
+    width: 100%;
+    max-width: 600px;
+    height: 85vh;
+    background: rgba(13, 17, 23, 0.8); /* Semi-transparent background */
+    border: 1px solid #00f0ff;
+    border-radius: 8px; /* Sharper corners */
+    
+    /* REDUCED: Neon glow effect for the container */
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.3), 0 0 3px rgba(0, 240, 255, 0.3) inset; 
+    
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(5px); /* Frosted glass effect */
+}
+
+.title-container {
     text-align: center;
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    padding: 15px;
+    border-bottom: 1px solid #00f0ff;
+    /* REDUCED: Inner shadow for depth */
+    box-shadow: 0 1px 3px rgba(0, 240, 255, 0.1) inset; 
 }
 
-h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+.main-title {
+    font-size: 2.2rem;
+    margin: 0;
+    color: #ffffff;
+    /* REDUCED: Neon glow for the main title */
+    text-shadow: 0 0 3px #fff, 0 0 6px #00f0ff, 0 0 12px #00f0ff; 
 }
 
-.status {
-    font-size: 1.2rem;
-    color: #606770;
-    height: 30px;
-    margin-bottom: 20px;
+.subtitle {
+    margin: 5px 0 0 0;
+    font-size: 1rem;
+    color: #00f0ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#chat-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 8px;
+    max-width: 80%;
+    line-height: 1.6;
+    border: 1px solid transparent;
+}
+
+.user-message {
+    background-color: rgba(0, 123, 255, 0.2);
+    color: #ffffff;
+    border-color: #007bff;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+.bot-message {
+    background-color: rgba(40, 40, 40, 0.5);
+    color: #00f0ff;
+    border-color: #333;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+    position: relative;
+    padding-left: 15px; 
+}
+
+/* Remove the emoji and use a terminal-style cursor */
+.bot-message.speaking::after {
+    content: '▋';
+    animation: blink 1s step-end infinite;
+    display: inline-block;
+    margin-left: 5px;
+}
+@keyframes blink {
+    from, to { color: transparent; }
+    50% { color: #00f0ff; }
+}
+
+.input-area {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #00f0ff;
+    background: rgba(13, 17, 23, 0.8);
 }
 
 #micButton {
-    background: #007bff;
-    border: none;
+    background: transparent;
+    border: 2px solid #00f0ff;
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.2s ease;
+    /* REDUCED: Shadow for mic button */
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
 }
 
 #micButton:hover {
-    background-color: #0056b3;
+    background: rgba(0, 240, 255, 0.1); /* Slightly less intense hover */
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.8); /* Slightly less intense hover glow */
 }
 
 #micButton.listening {
-    background-color: #dc3545;
-    transform: scale(1.1);
+    border-color: #ff00ff; /* Neon magenta when listening */
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.8); /* Slightly less intense listening glow */
 }
 
 .mic-icon {
-    width: 40px;
-    height: 40px;
-    color: white;
+    width: 30px;
+    height: 30px;
+    color: #00f0ff;
+    transition: all 0.2s ease;
 }
 
-.user-question {
-    margin-top: 20px;
-    font-size: 1rem;
-    color: #333;
-    min-height: 20px;
+#micButton.listening .mic-icon {
+    color: #ff00ff;
 }
