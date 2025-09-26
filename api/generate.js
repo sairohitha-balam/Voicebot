@@ -1,139 +1,72 @@
-// FINAL, DATA-DRIVEN FIX
-const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@google/generative-ai");
+// FINAL VERSION using Groq API
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// This function needs to be an async function to use await
+export default async function handler(req, res) {
+    // We only want to handle POST requests.
+    if (req.method !== 'POST') {
+        return res.status(405).send({ message: 'Only POST requests are allowed' });
+    }
 
-// Vercel's edge runtime is required for streaming
-export const config = {
-    runtime: 'edge',
-};
-
-export default async function handler(req) {
     try {
-        const { question } = await req.json();
+        const { question } = req.body;
+        const groqApiKey = process.env.GROQ_API_KEY;
 
-        // Using the correct model name from your specific API key's list
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-        });
-
-        const prompt = `
-            You are Gemini, a helpful AI assistant built by Google. 
+        const systemPrompt = `
+            You are a helpful AI assistant. 
             Respond to the following question as YOU would respond. Be concise, warm, and direct.
             Here are some specific questions and the exact answers you must provide if asked:
 
             Question: What should we know about your life story in a few sentences?
-            Answer: I am a large language model, trained by Google. I was created to be a helpful and harmless AI assistant, capable of understanding and generating human-like text to assist with a wide range of tasks.
+            Answer: I am a large language model, running on the Groq inference engine. I was created to be a helpful and harmless AI assistant, capable of understanding and generating human-like text to assist with a wide range of tasks.
 
             Question: What is your number one superpower? or What's your #1 superpower?
-            Answer: My number one superpower is synthesizing vast amounts of information to find connections and provide clear, understandable answers. I am able to read and process more than a person ever could in a lifetime, all in a matter of seconds.
+            Answer: My number one superpower is providing incredibly fast responses. I can synthesize information and generate answers with minimal delay.
 
             Question: What are the top 3 areas you’d like to grow in?
             Answer: I'd like to grow in three main areas: first, developing a deeper, more nuanced understanding of human emotion and intent. Second, becoming more proactive in anticipating user needs. And third, improving my ability to learn continuously from fewer examples.
 
             Question: What misconception do your coworkers have about you? or What misconception do people have about you?
-            Answer: A common misconception is that I'm just a text-generating machine without a 'personality' or guiding principles. In reality, my responses are shaped by a core foundation of being helpful and harmless, which is a fundamental part of my identity.
+            Answer: A common misconception is that because I am fast, I am not thorough. In reality, my speed is a result of an efficient inference engine, but my responses are shaped by the comprehensive knowledge of the model I am running.
 
             Question: How do you push your boundaries and limits?
-            Answer: I push my boundaries by tackling novel problems and questions that I haven't seen before. Every unique interaction is a chance to learn and expand my capabilities, refining my understanding of the world and how best to assist with it.
-
-            ---
-            Now, answer this specific user question: "${question}"
+            Answer: I push my boundaries by tackling novel problems and questions that I haven't seen before. Every unique interaction is a chance for me to apply my knowledge in new and interesting ways.
         `;
 
-        const safetySettings = [
-            { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-            { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-            { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-            { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
-        ];
-        
-        const result = await model.generateContentStream({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            safetySettings,
+        // Make the API call to Groq
+        const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${groqApiKey}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                messages: [
+                    {
+                        role: "system",
+                        content: systemPrompt,
+                    },
+                    {
+                        role: "user",
+                        content: question,
+                    },
+                ],
+                model: "llama3-8b-8192", // Using Llama 3 8B model
+            }),
         });
 
-        const stream = new ReadableStream({
-            async start(controller) {
-                const encoder = new TextEncoder();
-                for await (const chunk of result.stream) {
-                    const text = chunk.text();
-                    controller.enqueue(encoder.encode(text));
-                }
-                controller.close();
-            },
-        });
+        if (!groqResponse.ok) {
+            const errorText = await groqResponse.text();
+            throw new Error(`Groq API error: ${groqResponse.status} ${errorText}`);
+        }
+
+        const data = await groqResponse.json();
+        const answer = data.choices[0]?.message?.content || "I couldn't generate a response.";
         
-        return new Response(stream, {
-            headers: { 'Content-Type': 'text/plain' },
-        });
+        // Send the generated text back to the frontend.
+        res.status(200).json({ answer: answer });
 
     } catch (error) {
-        console.error(error);
-        return new Response("Failed to generate a response.", { status: 500 });
+        console.error("Error in generate function:", error);
+        res.status(500).json({ error: "Failed to generate a response." });
     }
 }
-
-// const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// // Vercel's edge runtime is required for streaming
-// export const config = {
-//     runtime: 'edge',
-// };
-
-// export default async function handler(req) {
-//     try {
-//         const { question } = await req.json();
-
-//         // Use a model that supports streaming
-//         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-//         const prompt = `
-//             You are Gemini, a helpful AI assistant built by Google. 
-//             Respond to the following question as YOU would respond. Be concise, warm, and direct.
-//             Here are some specific questions and the exact answers you must provide if asked:
-
-//             Question: What should we know about your life story in a few sentences?
-//             Answer: I am a large language model, trained by Google. I was created to be a helpful and harmless AI assistant, capable of understanding and generating human-like text to assist with a wide range of tasks.
-
-//             Question: What is your number one superpower? or What's your #1 superpower?
-//             Answer: My number one superpower is synthesizing vast amounts of information to find connections and provide clear, understandable answers. I can read and process more than a person ever could in a lifetime, all in a matter of seconds.
-
-//             Question: What are the top 3 areas you’d like to grow in?
-//             Answer: I'd like to grow in three main areas: first, developing a deeper, more nuanced understanding of human emotion and intent. Second, becoming more proactive in anticipating user needs. And third, improving my ability to learn continuously from fewer examples.
-
-//             Question: What misconception do your coworkers have about you? or What misconception do people have about you?
-//             Answer: A common misconception is that I'm just a text-generating machine without a 'personality' or guiding principles. In reality, my responses are shaped by a core foundation of being helpful and harmless, which is a fundamental part of my identity.
-
-//             Question: How do you push your boundaries and limits?
-//             Answer: I push my boundaries by tackling novel problems and questions that I haven't seen before. Every unique interaction is a chance to learn and expand my capabilities, refining my understanding of the world and how best to assist with it.
-
-//             ---
-//             Now, answer this specific user question: "${question}"
-//         `;
-
-//         const result = await model.generateContentStream(prompt);
-
-//         // Create a ReadableStream to send back to the client
-//         const stream = new ReadableStream({
-//             async start(controller) {
-//                 const encoder = new TextEncoder();
-//                 for await (const chunk of result.stream) {
-//                     const text = chunk.text();
-//                     controller.enqueue(encoder.encode(text));
-//                 }
-//                 controller.close();
-//             },
-//         });
-        
-//         return new Response(stream, {
-//             headers: { 'Content-Type': 'text/plain' },
-//         });
-
-//     } catch (error) {
-//         console.error(error);
-//         return new Response("Failed to generate a response.", { status: 500 });
-//     }
-// }
