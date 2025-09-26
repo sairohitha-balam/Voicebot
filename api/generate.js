@@ -1,8 +1,6 @@
-// FINAL VERSION using Groq API
+// FINAL VERSION using Groq API with the correct, active model
 
-// This function needs to be an async function to use await
 export default async function handler(req, res) {
-    // We only want to handle POST requests.
     if (req.method !== 'POST') {
         return res.status(405).send({ message: 'Only POST requests are allowed' });
     }
@@ -32,7 +30,6 @@ export default async function handler(req, res) {
             Answer: I push my boundaries by tackling novel problems and questions that I haven't seen before. Every unique interaction is a chance for me to apply my knowledge in new and interesting ways.
         `;
 
-        // Make the API call to Groq
         const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -50,7 +47,8 @@ export default async function handler(req, res) {
                         content: question,
                     },
                 ],
-                model: "llama3-8b-8192", // Using Llama 3 8B model
+                // --- THIS IS THE ONLY LINE THAT HAS CHANGED ---
+                model: "llama-3.1-8b-instant", // UPDATED: Using the current, active Llama 3.1 model
             }),
         });
 
@@ -62,7 +60,6 @@ export default async function handler(req, res) {
         const data = await groqResponse.json();
         const answer = data.choices[0]?.message?.content || "I couldn't generate a response.";
         
-        // Send the generated text back to the frontend.
         res.status(200).json({ answer: answer });
 
     } catch (error) {
