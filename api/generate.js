@@ -62,7 +62,7 @@
 //     }
 // }
 
-// FINAL, CORRECTED VERSION
+// FINAL CORRECTED VERSION
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@google/generative-ai");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -76,9 +76,9 @@ export default async function handler(req) {
     try {
         const { question } = await req.json();
 
-        // Using the stable "gemini-pro" model to fix the 404 error
+        // FINAL FIX: Using the full, versioned model name "gemini-1.0-pro"
         const model = genAI.getGenerativeModel({
-            model: "gemini-pro",
+            model: "gemini-1.0-pro",
         });
 
         const prompt = `
@@ -90,7 +90,7 @@ export default async function handler(req) {
             Answer: I am a large language model, trained by Google. I was created to be a helpful and harmless AI assistant, capable of understanding and generating human-like text to assist with a wide range of tasks.
 
             Question: What is your number one superpower? or What's your #1 superpower?
-            Answer: My number one superpower is synthesizing vast amounts of information to find connections and provide clear, understandable answers. I can read and process more than a person ever could in a lifetime, all in a matter of seconds.
+            Answer: My number one superpower is synthesizing vast amounts of information to find connections and provide clear, understandable answers. I am able to read and process more than a person ever could in a lifetime, all in a matter of seconds.
 
             Question: What are the top 3 areas you’d like to grow in?
             Answer: I'd like to grow in three main areas: first, developing a deeper, more nuanced understanding of human emotion and intent. Second, becoming more proactive in anticipating user needs. And third, improving my ability to learn continuously from fewer examples.
