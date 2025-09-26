@@ -63,22 +63,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) throw new Error(`Server responded with ${response.status}`);
             
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let fullResponse = "";
-            botMessageElement.textContent = ""; // Clear placeholder
-
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-                
-                const chunk = decoder.decode(value);
-                fullResponse += chunk;
-                botMessageElement.textContent = fullResponse; // Update in real-time
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
+            const data = await response.json();
             
-            speak(fullResponse, botMessageElement); // Speak after full response is received
+            const cleanAnswer = data.answer;
+            
+            botMessageElement.textContent = cleanAnswer;
+            speak(cleanAnswer, botMessageElement);
 
         } catch (error) {
             console.error('Error fetching from API:', error);
@@ -87,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function speak(text, messageElement) {
+        // Stop any currently speaking utterance to prevent overlap
+        window.speechSynthesis.cancel();
+
         const utterance = new SpeechSynthesisUtterance(text);
         
         utterance.onstart = () => {
